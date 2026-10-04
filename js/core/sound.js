@@ -27,6 +27,8 @@ CS.sound = (function () {
   }
   window.addEventListener('keydown', wake);
   window.addEventListener('mousedown', wake);
+  window.addEventListener('pointerdown', wake);
+  window.addEventListener('touchend', wake);
 
   // 음 하나. 높이가 from에서 to로 미끄러지며 사라진다. { wave, from, to, time, gain }
   function tone(at, o) {

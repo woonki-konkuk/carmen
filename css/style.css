@@ -1,14 +1,30 @@
+/* 화면의 높이. 휴대폰에서는 주소 줄을 뺀 실제로 보이는 높이를 쓴다. */
+:root {
+  --tall: 100vh;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --tall: 100dvh;
+  }
+}
+
 html, body {
   margin: 0;
   height: 100%;
   background: #111;
   overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #stage {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: var(--tall);
+  touch-action: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,9 +33,9 @@ html, body {
 /* 게임 화면. 글자 크기를 화면 너비에 맞춰, 안의 것들은 em으로 잰다. */
 #screen {
   position: relative;
-  width: min(100vw, calc(100vh * 16 / 9));
+  width: min(100vw, calc(var(--tall) * 16 / 9));
   aspect-ratio: 16 / 9;
-  font: calc(min(100vw, 100vh * 16 / 9) / 56) / 1.45 -apple-system, "Apple SD Gothic Neo", sans-serif;
+  font: calc(min(100vw, var(--tall) * 16 / 9) / 56) / 1.45 -apple-system, "Apple SD Gothic Neo", sans-serif;
   color: #2a2623;
   user-select: none;
   overflow: hidden;
@@ -294,6 +310,7 @@ small {
 #phone .body {
   flex: 1;
   overflow-y: auto;
+  touch-action: pan-y;
 }
 
 #phone .home {
@@ -1336,4 +1353,177 @@ small {
 
 #jail button {
   top: 82%;
+}
+
+/* 손가락 조작: 화면 위의 막대와 단추. 손가락을 쓰는 기기에서만 보인다. */
+#pad {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+html.touch #pad {
+  display: block;
+}
+
+html.touch #hint {
+  display: none;
+}
+
+/* 휴대폰 단추는 둘러보는 자리 위에 올려 누를 수 있게 한다 */
+html.touch #phone-button {
+  z-index: 5;
+  padding: 0.5em 1em;
+}
+
+#pad > * {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+/* 지금 장면에 쓰지 않는 단추는 감춘다 */
+#pad > [hidden] {
+  display: none !important;
+}
+
+#pad .look {
+  left: 40%;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+#pad .stick {
+  left: 2.5em;
+  bottom: 2.5em;
+  width: 10em;
+  height: 10em;
+  box-sizing: border-box;
+  border: 0.15em solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  background: rgba(20, 16, 14, 0.35);
+}
+
+#pad .stick i {
+  position: absolute;
+  left: 30%;
+  top: 30%;
+  width: 40%;
+  height: 40%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+#pad .key {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 6.4em;
+  height: 6.4em;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0.15em solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  background: rgba(20, 16, 14, 0.45);
+  color: #fff;
+  font-size: 0.9em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+#pad .key.on {
+  background: rgba(200, 20, 47, 0.75);
+}
+
+#pad .key kbd {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: #fff;
+  font-size: 1.15em;
+}
+
+#pad .run {
+  left: 15.5em;
+  bottom: 3em;
+  width: 5.2em;
+  height: 5.2em;
+}
+
+#pad .act {
+  right: 2.4em;
+  bottom: 7em;
+  width: 7em;
+  height: 7em;
+}
+
+#pad .act kbd {
+  font-size: 1.8em;
+}
+
+#pad .fire {
+  right: 11.5em;
+  bottom: 4em;
+}
+
+#pad .left {
+  left: 3em;
+  bottom: 3.5em;
+  width: 7.4em;
+  height: 7.4em;
+}
+
+#pad .right {
+  left: 12em;
+  bottom: 3.5em;
+  width: 7.4em;
+  height: 7.4em;
+}
+
+#pad .guard {
+  right: 12em;
+  bottom: 3em;
+}
+
+#pad .punch,
+#pad .hold {
+  right: 2.6em;
+  bottom: 3.5em;
+  width: 8em;
+  height: 8em;
+}
+
+#pad .hold {
+  bottom: 7em;
+}
+
+/* 세로로 든 휴대폰에서는 가로로 돌리라고 알린다 */
+#rotate {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  background: #111;
+  color: #fff;
+  font: 600 18px/1.4 -apple-system, "Apple SD Gothic Neo", sans-serif;
+}
+
+#rotate b {
+  font-size: 48px;
+  line-height: 1;
+}
+
+@media (orientation: portrait) {
+  html.touch #rotate {
+    display: flex;
+  }
 }

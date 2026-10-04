@@ -129,6 +129,7 @@
       CS.hud.resolve();
     }
     CS.music.want(tune());
+    CS.touch.update(!!overlay);
     screen.classList.toggle('busy', !!overlay);
     hint.classList.toggle('hidden', !!overlay || input.isLooking());
 

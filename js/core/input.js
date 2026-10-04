@@ -1,6 +1,7 @@
 window.CS = window.CS || {};
 
 // 키보드와 마우스 상태. 한글 입력 상태에서도 되도록 e.key가 아닌 e.code를 쓴다.
+// 손가락 조작(touch.js)은 press, release, look으로 키를 누르고 마우스를 움직인 것처럼 알린다.
 CS.input = (function () {
   const GAME_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'Tab'];
   const down = {};
@@ -58,6 +59,21 @@ CS.input = (function () {
     return true;
   }
 
+  // 화면의 단추가 키를 누른다. 이미 누르고 있었으면 새로 누른 것으로 치지 않는다.
+  function press(code) {
+    if (!down[code]) pressed[code] = true;
+    down[code] = true;
+  }
+
+  function release(code) {
+    down[code] = false;
+  }
+
+  // 손가락으로 끈 만큼 둘러본다
+  function look(dx) {
+    lookDX += dx;
+  }
+
   // 프레임 끝에 불러, 아무도 받지 않은 누름을 버린다.
   function endFrame() {
     pressed = {};
@@ -74,5 +90,5 @@ CS.input = (function () {
     return dx;
   }
 
-  return { init, isDown, consume, endFrame, isLooking, takeLook };
+  return { init, isDown, consume, endFrame, isLooking, takeLook, press, release, look };
 })();

@@ -255,5 +255,5 @@ CS.fight = (function () {
       ' · 나 ' + '♥'.repeat(hearts) + '♡'.repeat(HEARTS - hearts);
   }
 
-  return { sprites: stars.concat([hat]), start, walkFrame };
+  return { sprites: stars.concat([hat]), start, walkFrame, busy: () => active };
 })();

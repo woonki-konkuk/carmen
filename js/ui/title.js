@@ -22,7 +22,9 @@ CS.title = (function () {
     '<p class="sub">파리의 눈물</p>' +
     '<button><kbd>E</kbd>' + (started ? '이어 하기' : '시작하기') + '</button>' +
     (started ? '<p class="where">' + CS.district.name + '에서 이어집니다</p>' : '') +
-    '<p class="keys">WASD 걷기 · Shift 뛰기 · 마우스로 둘러보기 · Tab 휴대폰</p>';
+    '<p class="keys">' + (CS.touch.on()
+      ? '왼쪽 막대로 걷기 · 화면 오른쪽을 끌어 둘러보기 · 단추로 뛰기와 소매치기'
+      : 'WASD 걷기 · Shift 뛰기 · 마우스로 둘러보기 · Tab 휴대폰') + '</p>';
   const g = panel.querySelector('canvas').getContext('2d');
 
   let active = false;

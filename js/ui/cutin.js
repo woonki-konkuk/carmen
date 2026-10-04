@@ -36,5 +36,10 @@ CS.cutin = (function () {
     after();
   }
 
+  // 화면을 눌러도 넘어간다
+  panel.addEventListener('click', () => {
+    if (active && clock > 0.4) clock = Math.max(clock, SHOW - OUT);
+  });
+
   return { show, busy: () => active, frame };
 })();

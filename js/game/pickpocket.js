@@ -31,8 +31,10 @@ CS.pickpocket = (function () {
   let clock = 0;
   let pressed = false;   // 마우스로 누르고 있는가
 
-  panel.addEventListener('mousedown', () => { pressed = true; });
-  window.addEventListener('mouseup', () => { pressed = false; });
+  // 마우스나 손가락으로 화면을 누르고 있어도 된다
+  panel.addEventListener('pointerdown', () => { pressed = true; });
+  window.addEventListener('pointerup', () => { pressed = false; });
+  window.addEventListener('pointercancel', () => { pressed = false; });
 
   function start(target, done) {
     active = true;

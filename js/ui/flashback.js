@@ -406,5 +406,7 @@ CS.flashback = (function () {
     frame,
     // 회상이 이어지는 중인가(다른 화면에서 연습하는 동안도 포함)
     active: () => active,
+    // 회상의 그림 위에서 연습(던지기)을 하는 중인가
+    playing: () => active && !!playing,
   };
 })();
