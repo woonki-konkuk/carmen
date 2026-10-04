@@ -25,10 +25,10 @@ CS.phone = (function () {
   const toast = document.getElementById('toast');
 
   root.innerHTML =
-    '<div class="status"><span>PARIS</span><span class="notch"></span><span>5G</span></div>' +
+    '<div class="status"><span>PARIS</span><span class="notch"></span><button class="shut">✕ 닫기</button></div>' +
     '<div class="head"><button class="back">‹</button><b class="title"></b></div>' +
     '<div class="body"></div>' +
-    '<button class="shut">닫기</button>';
+    '<button class="shut foot">✕ 휴대폰 닫기</button>';
   const head = root.querySelector('.head');
   const title = root.querySelector('.title');
   const body = root.querySelector('.body');
@@ -267,8 +267,8 @@ CS.phone = (function () {
   }
 
   root.querySelector('.back').addEventListener('click', back);
-  // 닫는 방법: 아래의 닫기 단추, 휴대폰 바깥(게임 화면)을 누르기, Tab
-  root.querySelector('.shut').addEventListener('click', hide);
+  // 닫는 방법: 위와 아래의 닫기 단추, 휴대폰 바깥(게임 화면)을 누르기, Tab
+  for (const button of root.querySelectorAll('.shut')) button.addEventListener('click', hide);
   document.getElementById('view').addEventListener('click', () => {
     if (open) hide();
   });

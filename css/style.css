@@ -277,7 +277,7 @@ small {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.3em 1.2em 0.25em;
+  padding: 0.5em 0.8em 0.5em 1.2em;
   background: #17181c;
   color: #fff;
   font-size: 0.7em;
@@ -313,18 +313,25 @@ small {
   touch-action: pan-y;
 }
 
-/* 맨 아래의 닫기 단추 */
+/* 닫기 단추: 위쪽 줄의 것과 맨 아래의 것 */
 #phone .shut {
   flex: none;
-  padding: 0.5em 0 0.6em;
-  border-radius: 0;
-  background: #17181c;
+  padding: 0.35em 0.9em;
+  border-radius: 1.2em;
+  background: #e0182d;
   color: #fff;
-  font-size: 0.9em;
+  font-size: 1.7em;
+  font-weight: 700;
+}
+
+#phone .shut.foot {
+  padding: 0.8em 0 0.9em;
+  border-radius: 0;
+  font-size: 1em;
 }
 
 #phone .shut:hover {
-  background: #2a2c33;
+  background: #c8102e;
 }
 
 #phone .home {
