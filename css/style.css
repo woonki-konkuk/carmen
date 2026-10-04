@@ -1,0 +1,1339 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #111;
+  overflow: hidden;
+}
+
+#stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 게임 화면. 글자 크기를 화면 너비에 맞춰, 안의 것들은 em으로 잰다. */
+#screen {
+  position: relative;
+  width: min(100vw, calc(100vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  font: calc(min(100vw, 100vh * 16 / 9) / 56) / 1.45 -apple-system, "Apple SD Gothic Neo", sans-serif;
+  color: #2a2623;
+  user-select: none;
+  overflow: hidden;
+  word-break: keep-all;
+}
+
+/* 480×270으로 그린 화면을 창에 맞춰 키운다 */
+#view {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  background: #000;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#hint {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 14px/1.4 -apple-system, "Apple SD Gothic Neo", sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+#hint.hidden {
+  display: block !important;
+  opacity: 0;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.5em;
+  margin-right: 0.45em;
+  padding: 0 0.3em;
+  box-sizing: border-box;
+  border-radius: 0.3em;
+  background: #fff;
+  color: #2a2623;
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+}
+
+button {
+  border: 0;
+  border-radius: 0.45em;
+  padding: 0.4em 1em;
+  background: #f3e7c9;
+  color: #2a2623;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #fff;
+}
+
+button kbd {
+  background: #2a2623;
+  color: #fff;
+}
+
+/* 걷는 화면 아래쪽의 안내 */
+#prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 14%;
+  transform: translateX(-50%);
+  padding: 0.35em 0.9em;
+  border-radius: 0.5em;
+  background: rgba(20, 16, 14, 0.8);
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* 화면 전체를 덮는 장면(카페, 알림 카드) */
+.panel {
+  position: absolute;
+  inset: 0;
+}
+
+.panel .leave {
+  position: absolute;
+  right: 1em;
+  top: 0.8em;
+}
+
+#cafe .cafe-name {
+  position: absolute;
+  left: 1em;
+  top: 0.8em;
+  padding: 0.25em 0.8em;
+  border-radius: 0.3em;
+  background: #a3222a;
+  color: #f3e7c9;
+  font-weight: 700;
+}
+
+.panel .bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.7em 1.2em 0.9em;
+  background: rgba(28, 20, 16, 0.9);
+  color: #f6efe2;
+}
+
+.panel .says {
+  margin: 0 0 0.6em;
+}
+
+.panel .choices {
+  display: flex;
+  gap: 0.8em;
+}
+
+.card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.3em 0.7em;
+  text-align: left;
+}
+
+.card img {
+  width: 4.6em;
+  image-rendering: pixelated;
+}
+
+small {
+  display: block;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* 카페나 휴대폰이 열려 있으면 걷는 화면의 안내를 감춘다 */
+#screen.busy #prompt,
+#screen.busy #status,
+#screen.busy #chase,
+#screen.busy #banner,
+#screen.busy #aim,
+#screen.busy #phone-button {
+  display: none;
+}
+
+#screen.phone-open #view {
+  filter: brightness(0.55);
+}
+
+.badge {
+  display: inline-block;
+  min-width: 1.4em;
+  margin-left: 0.5em;
+  padding: 0 0.3em;
+  box-sizing: border-box;
+  border-radius: 1em;
+  background: #e0182d;
+  color: #fff;
+  font-style: normal;
+  font-weight: 700;
+  text-align: center;
+}
+
+#phone-button {
+  position: absolute;
+  right: 1em;
+  bottom: 0.8em;
+  padding: 0.3em 0.8em;
+  background: rgba(20, 16, 14, 0.8);
+  color: #fff;
+}
+
+#phone-button:hover {
+  background: rgba(20, 16, 14, 0.95);
+}
+
+#phone-button kbd {
+  background: #fff;
+  color: #2a2623;
+}
+
+#toast {
+  position: absolute;
+  left: 50%;
+  top: 1em;
+  transform: translateX(-50%);
+  padding: 0.4em 1em;
+  border-radius: 0.6em;
+  background: #fff;
+  box-shadow: 0 0.2em 1em rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+#toast kbd {
+  margin: 0;
+  background: #2a2623;
+  color: #fff;
+}
+
+/* 휴대폰. 화면 아래에서 올라온다. */
+#phone {
+  position: absolute;
+  right: 4%;
+  bottom: 0;
+  width: 15.5em;
+  height: 92%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border: 0.45em solid #17181c;
+  border-bottom: 0;
+  border-radius: 1.6em 1.6em 0 0;
+  background: #f4f1ea;
+  box-shadow: 0 0 2em rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  transform: translateY(105%);
+  transition: transform 0.25s ease-out;
+}
+
+#phone.open {
+  transform: none;
+}
+
+#phone .status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3em 1.2em 0.25em;
+  background: #17181c;
+  color: #fff;
+  font-size: 0.7em;
+  font-weight: 700;
+}
+
+#phone .notch {
+  width: 5em;
+  height: 1em;
+  border-radius: 0.5em;
+  background: #000;
+}
+
+#phone .head {
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
+  padding: 0.2em 0.4em;
+  border-bottom: 1px solid #ddd6c8;
+  background: #fff;
+}
+
+#phone .back {
+  padding: 0 0.5em;
+  background: none;
+  font-size: 1.4em;
+  line-height: 1.2;
+}
+
+#phone .body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+#phone .home {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: start;
+  gap: 1em 0.3em;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1.4em 0.8em;
+  background: linear-gradient(160deg, #c8102e, #7d1a20);
+}
+
+#phone .hat {
+  position: absolute;
+  left: 15%;
+  bottom: 12%;
+  width: 70%;
+  fill: rgba(0, 0, 0, 0.2);
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0;
+  background: none;
+  color: #fff;
+  font-size: 0.8em;
+}
+
+.app:hover {
+  background: none;
+}
+
+.app .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6em;
+  height: 3.6em;
+  border-radius: 0.9em;
+  box-shadow: 0 0.15em 0.4em rgba(0, 0, 0, 0.3);
+}
+
+.app:hover .icon {
+  filter: brightness(1.15);
+}
+
+.app svg {
+  width: 60%;
+  fill: #fff;
+}
+
+.app kbd {
+  margin: 0;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 0.85em;
+}
+
+.app .badge {
+  position: absolute;
+  top: -0.4em;
+  right: 0.5em;
+  margin: 0;
+  background: #fff;
+  color: #c8102e;
+}
+
+.thread {
+  padding: 0.7em;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.8em;
+  font-weight: 700;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 50%;
+  background: #2a2623;
+  color: #fff;
+}
+
+.bubble {
+  width: fit-content;
+  max-width: 88%;
+  margin: 0 0 0.45em;
+  padding: 0.45em 0.7em;
+  border-radius: 0.3em 1em 1em 1em;
+  background: #e3ddd0;
+  font-size: 0.85em;
+}
+
+.empty,
+.count {
+  margin: 0;
+  padding: 0.6em 0.8em;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+.map canvas {
+  display: block;
+  width: 100%;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2em 0.9em;
+  padding: 0.6em 0.8em 0;
+  font-size: 0.8em;
+}
+
+.legend i {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.3em;
+  border-radius: 0.2em;
+  vertical-align: -0.05em;
+}
+
+.entry {
+  display: flex;
+  gap: 0.6em;
+  padding: 0.6em 0.8em;
+  border-top: 1px solid #ddd6c8;
+  font-size: 0.85em;
+}
+
+.entry img {
+  width: 5em;
+  align-self: flex-start;
+  image-rendering: pixelated;
+}
+
+.entry p {
+  margin: 0.3em 0 0;
+}
+
+.entry.unknown img {
+  filter: brightness(0);
+  opacity: 0.25;
+}
+
+/* 왼쪽 위: 가진 돈과 추격 게이지 */
+#status {
+  position: absolute;
+  left: 1em;
+  top: 0.8em;
+  display: flex;
+  gap: 0.5em;
+}
+
+#money {
+  padding: 0.25em 0.8em;
+  border-radius: 0.5em;
+  background: rgba(20, 16, 14, 0.8);
+  color: #ffd76a;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+#heat {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.25em 0.8em;
+  border-radius: 0.5em;
+  background: rgba(20, 16, 14, 0.8);
+  color: #fff;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+#heat i {
+  display: block;
+  width: 8em;
+  height: 0.55em;
+  border-radius: 0.3em;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+#heat b {
+  display: block;
+  height: 100%;
+  background: #e0182d;
+}
+
+/* 거의 다 찼을 때 깜박인다 */
+#heat.danger {
+  animation: alarm 0.7s ease-in-out infinite;
+}
+
+@keyframes alarm {
+  50% { background: #a30f20; }
+}
+
+/* 가운데에 띄우는 알림 카드 */
+#notice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 16, 14, 0.6);
+}
+
+.note-card {
+  width: 22em;
+  padding: 1.2em 1.4em;
+  border-radius: 0.6em;
+  background: #f6efe2;
+  box-shadow: 0 0.4em 2em rgba(0, 0, 0, 0.5);
+}
+
+.note-card h3 {
+  margin: 0 0 0.5em;
+}
+
+.note-card p {
+  margin: 0.5em 0;
+  font-size: 0.9em;
+}
+
+.note-card .choices {
+  margin-top: 0.9em;
+}
+
+.note-card button {
+  background: #2a2623;
+  color: #fff;
+}
+
+.note-card button:hover {
+  background: #4a423c;
+}
+
+.note-card button kbd {
+  background: #fff;
+  color: #2a2623;
+}
+
+/* 추격 중: 표적과의 거리 */
+#chase {
+  position: absolute;
+  left: 50%;
+  top: 0.8em;
+  transform: translateX(-50%);
+  padding: 0.25em 0.9em;
+  border-radius: 0.5em;
+  background: rgba(20, 16, 14, 0.8);
+  color: #fff;
+  font-size: 0.9em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#chase.warn {
+  background: rgba(200, 16, 46, 0.92);
+}
+
+/* 알림이 거리 표시를 가리지 않게 그 아래에 띄운다 */
+#chase:not(.hidden) ~ #toast {
+  top: 3.2em;
+}
+
+/* 손기술 게이지 */
+/* 소매치기 중에는 위쪽 알림을 감춰 안내 글을 가리지 않게 한다 */
+#pick:not(.hidden) ~ #toast,
+#brawl:not(.hidden) ~ #toast,
+#cutin:not(.hidden) ~ #toast {
+  display: none;
+}
+
+#pick .how {
+  position: absolute;
+  left: 50%;
+  top: 0.8em;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.35em 1em;
+  border-radius: 0.5em;
+  background: rgba(20, 16, 14, 0.85);
+  color: #fff;
+  white-space: nowrap;
+}
+
+#pick .how.good {
+  background: #1f8a4c;
+}
+
+#pick .how.bad {
+  background: #c8102e;
+}
+
+#pick .how kbd {
+  margin: 0 0.2em;
+}
+
+#pick .gauge {
+  position: absolute;
+  left: 20%;
+  bottom: 1.6em;
+  width: 60%;
+  height: 1.5em;
+  border: 0.2em solid #17181c;
+  border-radius: 0.4em;
+  background: #f4f1ea;
+  overflow: hidden;
+}
+
+#pick .zone,
+#pick .perfect {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+#pick .zone {
+  background: #7fd69a;
+}
+
+#pick .perfect {
+  background: #1f8a4c;
+}
+
+/* 차오르는 부분. 오른쪽 끝의 굵은 선이 지금 위치다. */
+#pick .gauge b {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  border-right: 0.25em solid #c8102e;
+  background: rgba(200, 16, 46, 0.28);
+}
+
+/* 누르기 시작할 때까지 남은 시간 */
+#pick .time {
+  position: absolute;
+  left: 20%;
+  bottom: 3.7em;
+  width: 60%;
+  height: 0.3em;
+  border-radius: 0.2em;
+  background: rgba(20, 16, 14, 0.5);
+  overflow: hidden;
+}
+
+#pick .time b {
+  display: block;
+  height: 100%;
+  background: #fff;
+}
+
+/* 카페: 가진 돈과 살 수 없는 디저트 */
+.purse {
+  margin-left: 0.6em;
+  padding: 0.05em 0.6em;
+  border-radius: 0.4em;
+  background: rgba(255, 215, 106, 0.2);
+  color: #ffd76a;
+  font-weight: 600;
+}
+
+.card.poor {
+  opacity: 0.45;
+}
+
+/* 형사가 나타날 때 화면 아래에 크게 띄우는 글 */
+#banner {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12%;
+  padding: 0.5em 1em;
+  background: rgba(200, 16, 46, 0.92);
+  color: #fff;
+  font-size: 1.5em;
+  font-weight: 800;
+  text-align: center;
+}
+
+#banner small {
+  font-size: 0.6em;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* 휴대폰 설정 */
+.settings {
+  padding: 0.1em 0.9em 1em;
+  font-size: 0.85em;
+}
+
+.settings h3 {
+  margin: 1em 0 0.3em;
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+
+.settings p {
+  margin: 0.25em 0 0.7em;
+}
+
+.settings button {
+  background: #2a2623;
+  color: #fff;
+}
+
+.settings button.danger {
+  background: #c8102e;
+}
+
+.settings button:hover {
+  filter: brightness(1.2);
+}
+
+/* 구역을 오갈 때의 검은 화면: 되찾은 보석과 장소 이름 */
+#curtain {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0b0a0a;
+  color: #fff;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#curtain canvas {
+  width: 9em;
+  image-rendering: pixelated;
+}
+
+#curtain .line {
+  margin: 0.5em 0 0;
+  font-size: 1.7em;
+  font-weight: 800;
+}
+
+#curtain .sub {
+  margin: 0.2em 0 0;
+  opacity: 0.8;
+}
+
+/* 떠날 때: 다 어두워진 뒤에 보석과 글이 나타난다 */
+#curtain.depart > * {
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+#curtain.depart.shine > * {
+  opacity: 1;
+}
+
+/* 도착했을 때: 구역 이름을 잠깐 보여 주고 걷힌다 */
+#curtain.arrive {
+  animation: lift 1.9s ease-in forwards;
+}
+
+#curtain.arrive canvas {
+  display: none;
+}
+
+@keyframes lift {
+  0%, 45% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 전투: 화면 한가운데의 조준점 */
+#aim {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0.9em;
+  height: 0.9em;
+  margin: -0.45em 0 0 -0.45em;
+  box-sizing: border-box;
+  border: 0.15em solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.08em rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+/* 전투: 표창에 맞았을 때 화면 가장자리가 붉게 번쩍인다 */
+#hurt {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 6em 2em rgba(200, 16, 46, 0.85);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#hurt.on {
+  animation: hurt 0.5s ease-out;
+}
+
+@keyframes hurt {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+#banner kbd {
+  margin: 0 0.2em 0 0;
+}
+
+/* 얼굴을 크게 보여 주는 컷: 가로 띠가 왼쪽에서 미끄러져 들어온다 */
+#cutin {
+  display: flex;
+  align-items: center;
+  background: rgba(8, 10, 12, 0.6);
+  overflow: hidden;
+  transition: opacity 0.25s;
+}
+
+#cutin.out {
+  opacity: 0;
+}
+
+#cutin .band {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 58%;
+  border-top: 0.25em solid #fff;
+  border-bottom: 0.25em solid #fff;
+  animation: band-in 0.28s ease-out;
+}
+
+#cutin img {
+  height: 100%;
+}
+
+#cutin .name {
+  flex: 1;
+  padding: 0 1em;
+  color: #fff;
+  text-align: center;
+  animation: who-in 0.45s ease-out;
+}
+
+#cutin .name b {
+  display: block;
+  font-size: 2.6em;
+  font-weight: 900;
+  line-height: 1.15;
+  text-shadow: 0.08em 0.08em 0 rgba(0, 0, 0, 0.45);
+}
+
+#cutin .name span {
+  display: block;
+  margin-top: 0.3em;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+@keyframes band-in {
+  from { transform: translateX(-100%); }
+  to { transform: none; }
+}
+
+@keyframes who-in {
+  0%, 45% { opacity: 0; transform: translateX(3em); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* 주먹 전투: 상대의 체력 막대, 내 체력, 알림 글, 조작 안내 */
+#brawl .foe {
+  position: absolute;
+  left: 50%;
+  top: 0.8em;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0.3em 0.9em;
+  border-radius: 0.5em;
+  background: rgba(20, 16, 14, 0.85);
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+#brawl .foe i {
+  display: block;
+  width: 14em;
+  height: 0.7em;
+  border-radius: 0.35em;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+#brawl .foe span {
+  display: block;
+  height: 100%;
+  background: #e08a2b;
+  transition: width 0.15s;
+}
+
+#brawl.rage .foe span {
+  background: #e0182d;
+}
+
+#brawl .me {
+  position: absolute;
+  left: 1em;
+  top: 0.8em;
+  margin: 0;
+  padding: 0.3em 0.9em;
+  border-radius: 0.5em;
+  background: rgba(20, 16, 14, 0.85);
+  color: #ff6b7d;
+  font-weight: 700;
+}
+
+#brawl .call {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 22%;
+  margin: 0;
+  color: #fff;
+  font-size: 2em;
+  font-weight: 900;
+  text-align: center;
+  text-shadow: 0.08em 0.08em 0 rgba(0, 0, 0, 0.6);
+}
+
+#brawl .call.good {
+  color: #9af0b0;
+}
+
+#brawl .call.bad {
+  color: #ff6b7d;
+}
+
+#brawl .keys {
+  position: absolute;
+  right: 1em;
+  top: 0.8em;
+  margin: 0;
+  padding: 0.3em 0.8em;
+  border-radius: 0.5em;
+  background: rgba(20, 16, 14, 0.85);
+  color: #fff;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+#brawl .keys kbd {
+  margin: 0 0.25em 0 0.5em;
+}
+
+#brawl .keys kbd:first-child {
+  margin-left: 0;
+}
+
+/* 엔딩: 달이 뜬 파리의 지붕 위. 그림 위에 글이 차례로 나타난다 */
+#ending {
+  z-index: 3;
+  background: #0b0a0a;
+  color: #fff;
+}
+
+#ending canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#ending > p,
+#ending > h2,
+#ending > .foot {
+  position: absolute;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 0.8s, transform 0.8s;
+}
+
+#ending > .on {
+  opacity: 1;
+}
+
+#ending .label {
+  left: 6%;
+  top: 8%;
+  color: #ff5d70;
+  font-size: 0.9em;
+  font-weight: 800;
+  letter-spacing: 0.4em;
+}
+
+#ending h2 {
+  left: 6%;
+  top: 13.5%;
+  font-size: 2.2em;
+  font-weight: 800;
+  line-height: 1.2;
+  text-shadow: 0 0.1em 0.7em rgba(0, 0, 0, 0.7);
+  transform: translateY(0.4em);
+}
+
+#ending h2.on {
+  transform: none;
+}
+
+#ending .gem {
+  top: 56.5%;
+  transform: translateX(-50%);
+  font-size: 0.72em;
+  font-weight: 700;
+  white-space: nowrap;
+  text-shadow: 0 0.1em 0.5em rgba(0, 0, 0, 0.8);
+}
+
+#ending .word {
+  left: 6%;
+  top: 67%;
+  max-width: 19em;
+  padding: 0.5em 0.9em 0.6em;
+  border-radius: 0.9em 0.9em 0.9em 0.2em;
+  background: rgba(12, 10, 24, 0.78);
+}
+
+#ending .word b {
+  display: block;
+  color: #8fd6ff;
+  font-size: 0.75em;
+}
+
+#ending .foot {
+  right: 4%;
+  bottom: 4.5%;
+  display: flex;
+  align-items: center;
+  gap: 1.3em;
+}
+
+#ending .foot b {
+  font-size: 1.5em;
+  font-weight: 800;
+}
+
+/* 시작 화면: 노을빛 파리와 카르멘. 왼쪽에 제목과 시작 단추 */
+#title {
+  z-index: 3;
+  background: #ee8f3c;
+  color: #2a0d12;
+}
+
+#title canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#title > h1,
+#title > p,
+#title > button {
+  position: absolute;
+  left: 6%;
+  margin: 0;
+}
+
+#title h1 {
+  top: 9%;
+  font-size: 3.4em;
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+#title .sub {
+  top: 41%;
+  color: #b3122b;
+  font-size: 1.5em;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+}
+
+#title button {
+  top: 66%;
+  padding: 0.5em 1.3em;
+  background: #2a0d12;
+  color: #fff;
+  font-size: 1.15em;
+  animation: beckon 1.6s ease-in-out infinite;
+}
+
+#title button:hover {
+  background: #b3122b;
+}
+
+#title button kbd {
+  background: #fff;
+  color: #2a0d12;
+}
+
+#title .where {
+  top: 77.5%;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+#title .keys {
+  bottom: 5%;
+  font-size: 0.8em;
+  font-weight: 600;
+}
+
+@keyframes beckon {
+  0%, 100% { transform: none; }
+  50% { transform: translateY(-0.2em); }
+}
+
+/* 회상(튜토리얼): 그림 위에 때와 곳, 선생의 대사 */
+#flashback {
+  z-index: 3;
+  background: #0b0a0a;
+  color: #f6efe2;
+}
+
+#flashback canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#flashback .when {
+  position: absolute;
+  left: 4%;
+  top: 8%;
+  margin: 0;
+  padding: 0.2em 0.9em;
+  border-radius: 0.4em;
+  background: rgba(18, 14, 12, 0.75);
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+#flashback .skip {
+  position: absolute;
+  right: 4%;
+  top: 8%;
+  padding: 0.2em 0.9em;
+  background: rgba(18, 14, 12, 0.75);
+  color: #f6efe2;
+  font-size: 0.85em;
+}
+
+#flashback .skip:hover {
+  background: #c8102e;
+}
+
+#flashback .talk {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 8%;
+  padding: 0.7em 1.2em 0.8em;
+  border-radius: 0.6em;
+  border-left: 0.35em solid #b3202e;
+  background: rgba(18, 14, 12, 0.9);
+  cursor: pointer;
+}
+
+#flashback .talk.me {
+  border-left-color: #f6efe2;
+  font-style: italic;
+}
+
+#flashback .talk b {
+  color: #ff8a8f;
+  font-size: 0.85em;
+}
+
+#flashback .talk.me b {
+  color: #f6efe2;
+}
+
+#flashback .talk p {
+  min-height: 2.9em;
+  margin: 0.15em 6em 0 0;
+  font-size: 1.1em;
+}
+
+#flashback .talk p kbd {
+  margin: 0 0.2em;
+}
+
+#flashback .talk span {
+  position: absolute;
+  right: 1.2em;
+  bottom: 0.8em;
+  font-size: 0.85em;
+  opacity: 0.85;
+}
+
+/* 회상의 그림 위에서 하는 연습: 할 일과 결과 글 */
+#flashback .goal {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.3em 1em;
+  border-radius: 0.5em;
+  background: rgba(18, 14, 12, 0.85);
+  white-space: nowrap;
+}
+
+#flashback .goal b {
+  margin: 0 0.2em;
+  color: #ffd76a;
+}
+
+#flashback .goal kbd {
+  margin: 0 0.15em 0 0.3em;
+}
+
+#flashback .call {
+  position: absolute;
+  left: 50%;
+  top: 24%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 1.7em;
+  font-weight: 800;
+  text-shadow: 0 0.1em 0.4em rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#flashback .call.on {
+  animation: call-out 0.9s ease-out;
+}
+
+#flashback .call.good {
+  color: #8df0ad;
+}
+
+#flashback .call.bad {
+  color: #ff7a85;
+}
+
+@keyframes call-out {
+  0% { opacity: 0; transform: translate(-50%, 0.4em); }
+  15%, 70% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -0.3em); }
+}
+
+/* 감옥 엔딩: 감방 그림 오른쪽에 글이 차례로 나타난다 */
+#jail {
+  z-index: 3;
+  background: #0b0a0a;
+  color: #fff;
+}
+
+#jail canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#jail > p,
+#jail > h2,
+#jail > button {
+  position: absolute;
+  left: 60%;
+  margin: 0;
+  opacity: 0;
+  transition: opacity 0.8s, transform 0.8s;
+}
+
+#jail > .on {
+  opacity: 1;
+}
+
+#jail .label {
+  top: 13%;
+  color: #ff5d70;
+  font-size: 0.9em;
+  font-weight: 800;
+  letter-spacing: 0.4em;
+}
+
+#jail h2 {
+  top: 18.5%;
+  font-size: 2.2em;
+  font-weight: 800;
+  line-height: 1.2;
+  text-shadow: 0 0.1em 0.7em rgba(0, 0, 0, 0.8);
+  transform: translateY(0.4em);
+}
+
+#jail h2.on {
+  transform: none;
+}
+
+#jail .lost {
+  top: 44%;
+  font-weight: 600;
+  text-shadow: 0 0.1em 0.5em rgba(0, 0, 0, 0.9);
+}
+
+#jail .word {
+  top: 54%;
+  right: 4%;
+  padding: 0.5em 0.9em 0.6em;
+  border-radius: 0.9em 0.9em 0.9em 0.2em;
+  background: rgba(8, 10, 18, 0.85);
+}
+
+#jail .word b {
+  display: block;
+  color: #8fd6ff;
+  font-size: 0.75em;
+}
+
+#jail button {
+  top: 82%;
+}
