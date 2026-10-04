@@ -24,7 +24,10 @@ CS.title = (function () {
     (started ? '<p class="where">' + CS.district.name + '에서 이어집니다</p>' : '') +
     '<p class="keys">' + (CS.touch.on()
       ? '왼쪽 막대로 걷기 · 화면 오른쪽을 끌어 둘러보기 · 단추로 뛰기와 소매치기'
-      : 'WASD 걷기 · Shift 뛰기 · 마우스로 둘러보기 · Tab 휴대폰') + '</p>';
+      : 'WASD 걷기 · Shift 뛰기 · 마우스로 둘러보기 · Tab 휴대폰') + '</p>' +
+    (CS.touch.on() && CS.touch.stuck()
+      ? '<p class="tip">전체 화면으로 하려면: 사파리의 공유 단추 → "홈 화면에 추가" → 홈 화면의 아이콘으로 열기</p>'
+      : '');
   const g = panel.querySelector('canvas').getContext('2d');
 
   let active = false;
@@ -226,6 +229,7 @@ CS.title = (function () {
     panel.classList.add('hidden');
     save.play();
     CS.sound.play('start');
+    if (CS.touch.on()) CS.touch.fill();
     if (!CS.flashback.busy()) CS.travel.arrive();
   }
 

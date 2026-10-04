@@ -1527,3 +1527,25 @@ html.touch #phone-button {
     display: flex;
   }
 }
+
+#pad .full {
+  right: 1em;
+  top: 0.9em;
+  padding: 0.35em 0.9em;
+  border: 0.12em solid rgba(255, 255, 255, 0.7);
+  border-radius: 0.6em;
+  background: rgba(20, 16, 14, 0.6);
+  color: #fff;
+  font-size: 0.85em;
+  font-weight: 700;
+}
+
+#title .tip {
+  bottom: 11%;
+  padding: 0.35em 0.8em;
+  border-radius: 0.5em;
+  background: rgba(42, 13, 18, 0.85);
+  color: #fff;
+  font-size: 0.78em;
+  font-weight: 600;
+}

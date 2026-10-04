@@ -4,6 +4,8 @@ window.CS = window.CS || {};
 //   걸을 때: 왼쪽 막대(W A S D), Shift(뛰기를 켜고 끈다), 화면 오른쪽을 끌어 둘러보기, E, 표창 전투 중에는 Space
 //   주먹 전투와 던지기 연습: A, D, S, Space    소매치기 게이지: Space(화면 아무 데나 눌러도 된다)
 // 손가락을 쓰는 기기에서만 보이고(주소 끝에 ?touch=1을 붙이면 컴퓨터에서도 보인다), 장면에 맞는 단추만 나온다.
+// 전체 화면: 시작할 때와 '전체 화면' 단추를 누를 때 브라우저의 주소 줄을 없애고 가로로 고정한다.
+// 아이폰의 사파리는 이것을 허락하지 않아서, 홈 화면에 추가해 열어야 전체 화면이 된다.
 CS.touch = (function () {
   const input = CS.input;
   const DEAD = 0.3;  // 막대를 이만큼(반지름에 대한 비율) 넘게 밀어야 움직인다
@@ -17,6 +19,7 @@ CS.touch = (function () {
     '<div class="look" data-for="walk fight"></div>' +
     '<div class="stick" data-for="walk fight"><i></i></div>' +
     '<button class="key run" data-for="walk fight"><kbd>Shift</kbd>뛰기</button>' +
+    '<button class="full" data-for="walk fight">전체 화면</button>' +
     '<button class="key act" data-key="KeyE" data-for="walk fight"><kbd>E</kbd></button>' +
     '<button class="key fire" data-key="Space" data-for="fight drill"><kbd>Space</kbd>던지기</button>' +
     '<button class="key left" data-key="KeyA" data-for="brawl drill"><kbd>A</kbd>◀</button>' +
@@ -26,7 +29,7 @@ CS.touch = (function () {
     '<button class="key hold" data-key="Space" data-for="pick"><kbd>Space</kbd>누르기</button>';
   const parts = [...pad.children];
   const stick = pad.querySelector('.stick'), knob = stick.querySelector('i');
-  const look = pad.querySelector('.look'), run = pad.querySelector('.run');
+  const look = pad.querySelector('.look'), run = pad.querySelector('.run'), full = pad.querySelector('.full');
 
   let mode = null;      // 지금 장면. 단추가 필요 없는 장면(대사, 카드, 휴대폰 등)이면 'talk'
   let running = false;  // 뛰기를 켜 두었는가
@@ -40,6 +43,39 @@ CS.touch = (function () {
   window.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'touch') enable();
   }, true);
+
+  // 브라우저가 전체 화면을 허락하는가(아이폰의 사파리는 허락하지 않는다)
+  function fillable() {
+    return !!(root.requestFullscreen || root.webkitRequestFullscreen) &&
+      (document.fullscreenEnabled || document.webkitFullscreenEnabled) !== false;
+  }
+
+  // 이미 전체 화면인가: 전체 화면으로 바꿨거나, 홈 화면에 추가한 것을 열었다
+  function filled() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement) || navigator.standalone === true ||
+      (window.matchMedia && matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches);
+  }
+
+  // 전체 화면으로 바꾸고 가로로 고정한다. 사람이 누른 순간에만 된다.
+  function fill() {
+    if (!fillable() || filled()) return;
+    const turn = () => {
+      if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {});
+    };
+    try {
+      const asked = (root.requestFullscreen || root.webkitRequestFullscreen).call(root, { navigationUI: 'hide' });
+      if (asked && asked.then) asked.then(turn).catch(() => {});
+      else turn();
+    } catch (err) {
+      // 허락되지 않으면 그대로 둔다
+    }
+  }
+  full.addEventListener('click', fill);
+  for (const name of ['fullscreenchange', 'webkitfullscreenchange']) {
+    document.addEventListener(name, () => {
+      mode = null;  // 다음 장면에서 단추를 다시 고른다
+    });
+  }
 
   // 손가락이 단추 밖으로 미끄러져도 뗄 때까지 그 단추가 받게 한다
   function grab(el, e) {
@@ -139,6 +175,7 @@ CS.touch = (function () {
     if (now === mode) return;
     mode = now;
     for (const el of parts) el.hidden = !el.dataset.for.split(' ').includes(mode);
+    if (!fillable() || filled()) full.hidden = true;
     // 장면이 바뀌면 누르고 있던 것을 모두 뗀다. 켜 둔 뛰기는 걷는 장면으로 돌아오면 이어진다.
     for (const el of pad.querySelectorAll('[data-key]')) {
       input.release(el.dataset.key);
@@ -149,5 +186,11 @@ CS.touch = (function () {
     setRunning(running);
   }
 
-  return { update, on: () => root.classList.contains('touch') };
+  return {
+    update,
+    on: () => root.classList.contains('touch'),
+    fill,
+    // 전체 화면으로 바꿀 수도 없고 이미 전체 화면도 아닌가(아이폰의 사파리)
+    stuck: () => !fillable() && !filled(),
+  };
 })();
