@@ -27,7 +27,8 @@ CS.phone = (function () {
   root.innerHTML =
     '<div class="status"><span>PARIS</span><span class="notch"></span><span>5G</span></div>' +
     '<div class="head"><button class="back">‹</button><b class="title"></b></div>' +
-    '<div class="body"></div>';
+    '<div class="body"></div>' +
+    '<button class="shut">닫기</button>';
   const head = root.querySelector('.head');
   const title = root.querySelector('.title');
   const body = root.querySelector('.body');
@@ -266,6 +267,11 @@ CS.phone = (function () {
   }
 
   root.querySelector('.back').addEventListener('click', back);
+  // 닫는 방법: 아래의 닫기 단추, 휴대폰 바깥(게임 화면)을 누르기, Tab
+  root.querySelector('.shut').addEventListener('click', hide);
+  document.getElementById('view').addEventListener('click', () => {
+    if (open) hide();
+  });
   body.addEventListener('click', (e) => {
     const button = e.target.closest('[data-app]');
     if (button) show(button.dataset.app);
